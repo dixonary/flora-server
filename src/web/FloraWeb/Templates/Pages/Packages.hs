@@ -6,7 +6,7 @@ import Data.Maybe (fromJust)
 import Data.Text (Text, pack)
 import Data.Text qualified as Text
 import Data.Text.Display
-import Data.Time (defaultTimeLocale)
+import Data.Time (UTCTime, defaultTimeLocale)
 import Data.Time qualified as Time
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
@@ -23,6 +23,7 @@ import Lucid.Svg (clip_rule_, d_, fill_, fill_rule_, path_, viewBox_)
 import Servant (ToHttpApiData (..))
 import Text.PrettyPrint (Doc, hcat, render)
 import Text.PrettyPrint qualified as PP
+import Text.Time.Pretty (prettyTimeAuto)
 
 import Data.Function ((&))
 import Flora.Model.Category.Types (Category (..))
@@ -60,6 +61,7 @@ showPackage
   -> Vector (Namespace, PackageName, Text)
   -> Word
   -> Vector Category
+  -> UTCTime
   -> FloraHTML
 showPackage
   latestRelease
@@ -70,7 +72,8 @@ showPackage
   numberOfDependents
   dependencies
   numberOfDependencies
-  categories =
+  categories
+  currentTime =
     div_ [class_ "larger-container"] $! do
       presentationHeader latestRelease namespace name (latestRelease.metadata.synopsis)
       packageBody
@@ -83,6 +86,7 @@ showPackage
         dependents
         numberOfDependents
         categories
+        currentTime
 
 presentationHeader :: Release -> Namespace -> PackageName -> Text -> FloraHTML
 presentationHeader release namespace name synopsis =
@@ -104,6 +108,7 @@ packageBody
   -> Vector Package
   -> Word
   -> Vector Category
+  -> UTCTime
   -> FloraHTML
 packageBody
   Package{namespace, name = packageName, metadata = packageMetadata}
@@ -114,14 +119,15 @@ packageBody
   numberOfDependencies
   dependents
   numberOfDependents
-  categories =
+  categories
+  currentTime =
     div_ [class_ "package-body"] $! do
       div_ [class_ "package-left-column"] $! ul_ [class_ "package-left-rows"] $! do
         displayCategories categories
         displayLicense (metadata.license)
         displayMaintainer (metadata.maintainer)
         displayLinks namespace packageName latestRelease metadata
-        displayVersions namespace packageName packageReleases numberOfReleases
+        displayVersions namespace packageName packageReleases numberOfReleases currentTime
       div_ [class_ "release-readme-column"] $! div_ [class_ "release-readme"] $! displayReadme latestRelease
       div_ [class_ "package-right-column"] $! ul_ [class_ "package-right-rows"] $! do
         case packageMetadata.deprecationInfo of
@@ -194,8 +200,8 @@ displayChangelog :: Namespace -> PackageName -> Version -> Maybe TextHtml -> Flo
 displayChangelog _ _ _ Nothing = toHtml @Text ""
 displayChangelog namespace packageName version (Just _) = a_ [href_ ("/" <> toUrlPiece (Links.packageVersionChangelog namespace packageName version))] "Changelog"
 
-displayVersions :: Namespace -> PackageName -> Vector Release -> Word -> FloraHTML
-displayVersions namespace packageName versions numberOfReleases =
+displayVersions :: Namespace -> PackageName -> Vector Release -> Word -> UTCTime -> FloraHTML
+displayVersions namespace packageName versions numberOfReleases currentTime =
   li_ [class_ ""] $! do
     h3_ [class_ "package-body-section versions"] "Versions"
     ul_ [class_ "package-versions"] $! do
@@ -216,10 +222,9 @@ displayVersions namespace packageName versions numberOfReleases =
         case release.uploadedAt of
           Nothing -> ""
           Just ts -> do
-            span_ [] $ do
+            span_ [] $! do
               toHtml $! Time.formatTime defaultTimeLocale "%a, %_d %b %Y" ts
-              script_ [type_ ""] $
-                "window.formatRelativeTime(\"" <> Text.pack (Time.formatTime defaultTimeLocale "%F %T" ts) <> "\")"
+              toHtml $! prettyTimeAuto currentTime ts
 
 displayDependencies
   :: (Namespace, PackageName, Version)

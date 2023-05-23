@@ -13,6 +13,7 @@ import Data.Text.Display (display)
 import Data.Vector qualified as Vector
 import Distribution.Orphans ()
 import Distribution.Types.Version (Version)
+import Effectful.Time qualified as Time
 import Log (object, (.=))
 import Log qualified
 import Lucid
@@ -116,7 +117,7 @@ showPackageVersion namespace packageName mversion = do
             ]
       , "package" .= (display namespace <> "/" <> display packageName)
       ]
-
+  currentTime <- Time.getCurrentTime
   render templateEnv $
     Packages.showPackage
       release
@@ -128,6 +129,7 @@ showPackageVersion namespace packageName mversion = do
       releaseDependencies
       numberOfDependencies
       categories
+      currentTime
 
 showDependentsHandler :: Namespace -> PackageName -> Maybe Word -> FloraPage (Html ())
 showDependentsHandler namespace packageName Nothing = showDependentsHandler namespace packageName (Just 1)

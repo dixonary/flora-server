@@ -32,6 +32,3 @@ rendered :: DeploymentEnv -> FloraHTML -> FloraHTML
 rendered _deploymentEnv target = do
   header
   main_ [] target
-
--- when (deploymentEnv == Development) $
---   script_ [src_ "/static/js/autoreload.js", type_ "module"] ("" :: Text)

@@ -36,7 +36,7 @@ header = do
         unless indexPage $ meta_ [name_ "robots", content_ "noindex"]
         title_ (text title)
 
-        script_ [type_ "module"] $! do
+        script_ [] $! do
           toHtmlRaw @Text
             [str|
           document.documentElement.classList.remove('no-js');
@@ -67,9 +67,9 @@ jsLink = do
   let jsURL = "/static/" <> assets.jsBundle.name
   case environment of
     Production ->
-      script_ [src_ jsURL, type_ "module", defer_ "", integrity_ ("sha256-" <> assets.jsBundle.hash)] ("" :: Text)
+      script_ [src_ jsURL, type_ "", defer_ "", integrity_ ("sha256-" <> assets.jsBundle.hash)] ("" :: Text)
     _ ->
-      script_ [src_ jsURL, type_ "module", defer_ ""] ("" :: Text)
+      script_ [src_ jsURL, type_ "", defer_ ""] ("" :: Text)
 
 cssLink :: FloraHTML
 cssLink = do

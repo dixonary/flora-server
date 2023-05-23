@@ -264,6 +264,7 @@ library flora-web
     , pg-transact-effectful
     , postgresql-simple
     , pretty
+    , pretty-relative-time
     , prometheus-client
     , prometheus-metrics-ghc
     , prometheus-proc

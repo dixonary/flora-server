@@ -2,7 +2,7 @@ module FloraWeb.Routes where
 
 import Servant
 import Servant.API.Generic
-import Text.XML 
+import Text.XML
 
 import FloraWeb.Routes.Pages qualified as Pages
 import FloraWeb.Server.OpenSearch
