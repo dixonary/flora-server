@@ -35,6 +35,7 @@
     "watch-static-files": "cpx \"**/*.{svg,png,jpg}\" ../static -w"
   },
   "dependencies": {
-    "csslint": "^1.0.5"
+    "csslint": "^1.0.5",
+    "dayjs": "^1.11.7"
   }
 }

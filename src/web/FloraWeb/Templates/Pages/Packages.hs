@@ -215,8 +215,11 @@ displayVersions namespace packageName versions numberOfReleases =
         " "
         case release.uploadedAt of
           Nothing -> ""
-          Just ts ->
-            span_ [] (toHtml $! Time.formatTime defaultTimeLocale "%a, %_d %b %Y" ts)
+          Just ts -> do
+            span_ [] $ do
+              toHtml $! Time.formatTime defaultTimeLocale "%a, %_d %b %Y" ts
+              script_ [type_ ""] $
+                "window.formatRelativeTime(\"" <> Text.pack (Time.formatTime defaultTimeLocale "%F %T" ts) <> "\")"
 
 displayDependencies
   :: (Namespace, PackageName, Version)
