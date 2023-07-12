@@ -1,4 +1,6 @@
-packages: ./
+packages:
+    ./
+    https://hackage.haskell.org/package/servant-0.20.1/candidate/servant-0.20.1.tar.gz
 
 with-compiler: ghc-9.4.5
 
