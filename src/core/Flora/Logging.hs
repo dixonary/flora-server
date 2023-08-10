@@ -28,7 +28,7 @@ runLog
   -> Eff (Log : es) a
   -> Eff es a
 runLog env logger logAction =
-  Log.runLog ("floral-" <> suffix) logger Log.defaultLogLevel logAction
+  Log.runLog ("flora-" <> suffix) logger Log.defaultLogLevel logAction
   where
     suffix = display env
 
